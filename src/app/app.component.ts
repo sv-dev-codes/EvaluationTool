@@ -14,18 +14,35 @@ export class AppComponent {
   question = '';
   answer = '';
   result: any = null;
+  loading = false;
+  error: string | null = null;
 
   constructor(private apiService: ApiService) {}
 
   onButtonClick(): void {
+    this.loading = true;
+    this.result = null;
+    this.error = null;
     let obj = {
       "query": this.question,
       "answer": this.answer
     };
-    this.apiService.post<any>(obj).subscribe(response => {
-      console.log('API response:', response);
-      this.result = response;
+    this.apiService.post<any>(obj).subscribe({
+      next: (response) => {
+        console.log('API response:', response);
+        this.result = response;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('API error:', error);
+        this.error = error.message || 'Something went wrong. Please try again.';
+        this.loading = false;
+      }
     });
+  }
+
+  dismissError(): void {
+    this.error = null;
   }
 
   isArray(value: any): boolean {

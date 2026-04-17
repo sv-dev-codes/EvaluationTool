@@ -18,11 +18,39 @@
                 placeholder="Enter the answer to evaluate..." rows="4"></textarea>
             </div>
             <div class="d-grid">
-              <button type="button" (click)="onButtonClick()" class="btn btn-primary btn-lg">
-                <i class="bi bi-search me-2"></i>Analyze
+              <button type="button" (click)="onButtonClick()" class="btn btn-primary btn-lg" [disabled]="loading">
+                <span *ngIf="!loading">Analyze</span>
+                <span *ngIf="loading" class="btn-loading">
+                  <span class="spinner"></span>
+                  Analyzing...
+                </span>
               </button>
             </div>
           </form>
+
+          <!-- Loader -->
+          <div *ngIf="loading" class="loader-container mt-4">
+            <div class="loader-card">
+              <div class="loader-spinner"></div>
+              <h6>Analyzing your answer...</h6>
+              <p>Our AI agents are evaluating the response</p>
+              <div class="loader-dots">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error Block -->
+          <div *ngIf="error" class="error-container mt-4">
+            <div class="error-card">
+              <div class="error-icon">⚠️</div>
+              <h6>Oops! Something went wrong</h6>
+              <p>{{ error }}</p>
+              <button type="button" class="btn btn-outline-danger btn-sm" (click)="dismissError()">
+                Dismiss
+              </button>
+            </div>
+          </div>
 
           <!-- Result Section -->
           <div *ngIf="result" class="result-section mt-4">
