@@ -1,6 +1,6 @@
 <div class="container">
   <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
+    <div class="col-lg-10 col-xl-9">
       <div class="card shadow-lg mt-5">
         <div class="card-header bg-primary text-white text-center">
           <h2 class="mb-0">Evaluation Tool</h2>
@@ -26,10 +26,87 @@
 
           <!-- Result Section -->
           <div *ngIf="result" class="result-section mt-4">
-            <hr>
-            <h5 class="fw-bold text-primary mb-3">Analysis Result</h5>
-            <div class="result-content p-3 bg-light rounded">
-              <pre>{{ result | json }}</pre>
+            <div class="result-header">
+              <div class="result-title">
+                <span class="title-icon">📊</span>
+                <h5 class="fw-bold mb-0">Analysis Result</h5>
+              </div>
+              <div class="result-divider"></div>
+            </div>
+            
+            <!-- Overall Score Display -->
+            <div *ngIf="getOverallScore() !== null" class="overall-score-container mb-4">
+              <div class="overall-score-card" [ngClass]="getMetricColorClass(getOverallScore()!) + '-border'">
+                <div class="score-icon" [ngClass]="getMetricColorClass(getOverallScore()!) + '-bg'">
+                  <span *ngIf="getOverallScore()! <= 40">⚠️</span>
+                  <span *ngIf="getOverallScore()! > 40 && getOverallScore()! <= 70">📈</span>
+                  <span *ngIf="getOverallScore()! > 70">✅</span>
+                </div>
+                <div class="overall-label">Overall Score</div>
+                <div class="overall-value" [ngClass]="getMetricColorClass(getOverallScore()!) + '-text'">{{ getOverallScore() }}%</div>
+                <div class="overall-bar-container">
+                  <div class="overall-bar" [ngClass]="getMetricColorClass(getOverallScore()!)" [style.width.%]="getOverallScore()"></div>
+                </div>
+                <div class="score-status" [ngClass]="getMetricColorClass(getOverallScore()!) + '-text'">
+                  <span *ngIf="getOverallScore()! <= 40">Needs Improvement</span>
+                  <span *ngIf="getOverallScore()! > 40 && getOverallScore()! <= 70">Average</span>
+                  <span *ngIf="getOverallScore()! > 70">Good</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="agents-title mb-3">
+              <span class="title-icon">🤖</span>
+              <h6 class="fw-bold mb-0">Agent Analysis Breakdown</h6>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3" *ngFor="let item of result.agentFlow">
+                <div class="agent-card" [ngClass]="getAgentClass(item.agent)">
+                  <div class="agent-header">
+                    <h6 class="mb-0">{{ item.agent }}</h6>
+                  </div>
+                  <div class="agent-body">
+                    <div class="decision-section">
+                      <strong>Decision:</strong>
+                      <div *ngIf="isArray(item.decision)">
+                        <ul class="mb-0 ps-3">
+                          <li *ngFor="let d of item.decision">{{ d }}</li>
+                        </ul>
+                      </div>
+                      <div *ngIf="!isArray(item.decision) && item.agent === 'Coverage Agent'" class="coverage-bar mt-2">
+                        <div class="coverage-display">
+                          <span class="coverage-label">Coverage:</span>
+                          <span class="coverage-blocks">
+                            <span *ngFor="let block of getCoverageBlocks(item.decision).filled" class="block filled" [ngClass]="getMetricColorClass(getCoverageValue(item.decision)) + '-text'">█</span><span *ngFor="let block of getCoverageBlocks(item.decision).empty" class="block empty">░</span>
+                          </span>
+                          <span class="coverage-percent" [ngClass]="getMetricColorClass(getCoverageValue(item.decision)) + '-text'">{{ item.decision }}</span>
+                        </div>
+                      </div>
+                      <div *ngIf="!isArray(item.decision) && item.agent === 'Scoring Agent' && isObject(item.decision)" class="score-metrics mt-2">
+                        <div class="metric-row" *ngFor="let metric of getMetricKeysWithoutOverall(item.decision)">
+                          <div class="metric-label">{{ metric | titlecase }}</div>
+                          <div class="metric-bar-container">
+                            <div class="metric-bar" [ngClass]="getMetricColorClass(item.decision[metric])" [style.width.%]="item.decision[metric]"></div>
+                          </div>
+                          <div class="metric-value" [ngClass]="getMetricColorClass(item.decision[metric]) + '-text'">{{ item.decision[metric] }}%</div>
+                        </div>
+                      </div>
+                      <div *ngIf="!isArray(item.decision) && item.agent === 'Scoring Agent' && !isObject(item.decision)" class="score-scale mt-2">
+                        <div class="scale-container">
+                          <div class="scale-fill" [ngClass]="getScoreColorClass(item.decision)" [style.width.%]="getScorePercentage(item.decision)"></div>
+                        </div>
+                        <div class="scale-label" [ngClass]="getScoreColorClass(item.decision) + '-text'">{{ item.decision }}</div>
+                      </div>
+                      <span *ngIf="!isArray(item.decision) && item.agent !== 'Scoring Agent' && item.agent !== 'Coverage Agent'">{{ item.decision }}</span>
+                    </div>
+                    <div class="reason-section mt-2">
+                      <strong>Reason:</strong>
+                      <p class="mb-0">{{ item.reason }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
