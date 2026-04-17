@@ -1,1 +1,40 @@
-<h1>Evaluation tool</h1>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg mt-5">
+        <div class="card-header bg-primary text-white text-center">
+          <h2 class="mb-0">Evaluation Tool</h2>
+        </div>
+        <div class="card-body p-4">
+          <form>
+            <div class="mb-4">
+              <label for="questionInput" class="form-label fw-bold">Question</label>
+              <textarea class="form-control" id="questionInput" [(ngModel)]="question" name="question" 
+                placeholder="Enter your question here..." rows="3"></textarea>
+            </div>
+            <div class="mb-4">
+              <label for="answerInput" class="form-label fw-bold">Answer</label>
+              <textarea class="form-control" id="answerInput" [(ngModel)]="answer" name="answer" 
+                placeholder="Enter the answer to evaluate..." rows="4"></textarea>
+            </div>
+            <div class="d-grid">
+              <button type="button" (click)="onButtonClick()" class="btn btn-primary btn-lg">
+                <i class="bi bi-search me-2"></i>Analyze
+              </button>
+            </div>
+          </form>
+
+          <!-- Result Section -->
+          <div *ngIf="result" class="result-section mt-4">
+            <hr>
+            <h5 class="fw-bold text-primary mb-3">Analysis Result</h5>
+            <div class="result-content p-3 bg-light rounded">
+              <pre>{{ result | json }}</pre>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
